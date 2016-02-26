@@ -1,0 +1,6 @@
+@ReturnValuesAreNonnullByDefault
+@FieldsAreNonnullByDefault
+@ParametersAreNonnullByDefault
+package corewar.shared;
+
+import javax.annotation.ParametersAreNonnullByDefault;

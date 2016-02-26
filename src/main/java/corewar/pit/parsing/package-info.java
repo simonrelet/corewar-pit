@@ -1,0 +1,9 @@
+@ReturnValuesAreNonnullByDefault
+@FieldsAreNonnullByDefault
+@ParametersAreNonnullByDefault
+package corewar.pit.parsing;
+
+import corewar.shared.FieldsAreNonnullByDefault;
+import corewar.shared.ReturnValuesAreNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;
