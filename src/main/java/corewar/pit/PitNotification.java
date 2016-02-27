@@ -38,6 +38,7 @@ public abstract class PitNotification {
 	}
 
 	private static String secureString(String str) {
-		return str.replace("\"", "\\\"");
+		return str.replace("\"", "\\\"")
+			.replaceAll("\\s+", " ");
 	}
 }
