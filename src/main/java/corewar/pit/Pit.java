@@ -1,5 +1,6 @@
 package corewar.pit;
 
+import com.google.common.base.Strings;
 import corewar.pit.instruction.Instruction;
 import corewar.pit.instruction.ArithmeticInstruction;
 import corewar.pit.instruction.BinaryInstruction;
@@ -80,13 +81,21 @@ public final class Pit {
 	// -- Create binary --------------------------------------------------------------------------
 
 	private void toBin() {
-		shipBin.append(shipName).append(Constants.NON_TEXT_PADDING_CHAR);
-		shipBin.append(shipComment).append(Constants.NON_TEXT_PADDING_CHAR);
+		shipBin.append(shipName);
+		shipBin.append(getTextPadding(shipName.length(), Constants.NAME_MAX_CHARACTER_COUNT));
+
+		shipBin.append(shipComment);
+		shipBin.append(getTextPadding(shipComment.length(), Constants.COMMENT_MAX_CHARACTER_COUNT));
+
 		shipInstructions.forEach(instruction -> {
 			if (instruction instanceof BinaryInstruction) {
 				shipBin.append(((BinaryInstruction) instruction).toBinary());
 			}
 		});
+	}
+
+	private static String getTextPadding(int textLength, int maxLength) {
+		return Strings.repeat(Constants.NON_TEXT_PADDING_CHAR, maxLength - textLength);
 	}
 
 	// -- Eval Expr ------------------------------------------------------------------------------

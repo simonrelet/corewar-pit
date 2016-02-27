@@ -3,7 +3,7 @@ package corewar.shared;
 public final class Constants {
 
 	public static final char COMMENT_CHAR = '#';
-	public static final String NON_TEXT_PADDING_CHAR = "\0";
+	public static final String NON_TEXT_PADDING_CHAR = " ";
 	public static final int NAME_MAX_CHARACTER_COUNT = 32;
 	public static final int COMMENT_MAX_CHARACTER_COUNT = 128;
 
