@@ -14,16 +14,16 @@ public class Logger {
 	}
 
 	public static void logError(String msg) {
-		System.out.println("{errors:[{line:0,msg:\"" + msg + "\"}]}");
+		System.out.println("{\"errors\":[{\"line\":0,\"msg\":\"" + msg + "\"}]}");
 	}
 
 	public static void logErrors(List<PitError> errors) {
 		Optional<String> res = errors.stream().map(PitNotification::toString).reduce((s, s2) -> s + "," + s2);
-		System.out.println("{errors:[" + res.get() + "]}");
+		System.out.println("{\"errors\":[" + res.get() + "]}");
 	}
 
 	public static void logResult(String value) {
-		System.out.println("{value:\"" + value + "\"}");
+		System.out.println("{\"value\":\"" + value + "\"}");
 	}
 
 	public static void logResult(PitResult<PitShip> result) {

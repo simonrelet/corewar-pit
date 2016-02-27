@@ -16,9 +16,9 @@ public abstract class PitNotification {
 
 	@Override
 	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder("{line:")
+		StringBuilder stringBuilder = new StringBuilder("{\"line\":")
 			.append(line != -1 ? line : 0)
-			.append(",msg:\"")
+			.append(",\"msg\":\"")
 			.append(secureString(message));
 
 		if (!cause.isEmpty()) {
