@@ -22,6 +22,7 @@ public final class InstructionParser {
 	private static final String STRING_MODE = "mode";
 	private static final String STRING_STRING = "string";
 	private static final String LABEL_REGEX = "^[a-zA-Z][_a-zA-Z0-9]*(?<!_)$";
+	private static final String STRING_REGEX = "^\"(?>[^\\\\\"]++|\\\\.)*+\"$";
 
 	private InstructionParser() {
 	}
@@ -255,7 +256,7 @@ public final class InstructionParser {
 	// -- Parsing utilities ----------------------------------------------------------------------
 
 	private static boolean isValidString(String str) {
-		return !(!str.startsWith("\"") || !str.endsWith("\"")) && !str.substring(1, str.length() - 1).contains("\"");
+		return str.matches(STRING_REGEX);
 	}
 
 	private static int getRegisterValue(String registerStr) {
