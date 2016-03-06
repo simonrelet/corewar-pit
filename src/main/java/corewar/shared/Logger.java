@@ -5,10 +5,10 @@ import corewar.pit.PitNotification;
 import corewar.pit.PitResult;
 import corewar.pit.PitShip;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
-public class Logger {
+public final class Logger {
 
 	private Logger() {
 	}
@@ -17,7 +17,7 @@ public class Logger {
 		System.out.println("{\"errors\":[{\"line\":0,\"msg\":\"" + msg + "\"}]}");
 	}
 
-	public static void logErrors(List<PitError> errors) {
+	public static void logErrors(Collection<PitError> errors) {
 		Optional<String> res = errors.stream().map(PitNotification::toString).reduce((s, s2) -> s + "," + s2);
 		System.out.println("{\"errors\":[" + res.get() + "]}");
 	}

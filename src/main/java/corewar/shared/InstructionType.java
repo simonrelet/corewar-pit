@@ -40,7 +40,7 @@ public enum InstructionType {
 	private final String name;
 	private final int size;
 
-	private InstructionType(String name, int size) {
+	InstructionType(String name, int size) {
 		this.name = name;
 		this.size = size;
 	}

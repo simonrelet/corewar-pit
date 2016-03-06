@@ -33,7 +33,8 @@ public final class Utilities {
 		} else if (aByte > 9 && aByte < 16) {
 			ref = (byte) 'a' - 10;
 		} else {
-			throw new IllegalArgumentException("The byte '" + aByte + "' cannot be converted to a char");
+			throw new IllegalArgumentException("The byte '" + aByte
+					+ "' cannot be converted to a char");
 		}
 
 		return (char) (aByte + ref);
