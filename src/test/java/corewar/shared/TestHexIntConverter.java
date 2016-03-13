@@ -73,7 +73,8 @@ public class TestHexIntConverter {
 
 	private static void testIntToHexWithPrefix(int value, String hex) {
 		assertEquals(hex, HexIntConverter.intToHex(value, hex.length()));
-		assertEquals(Constants.HEX_PREFIX + hex, HexIntConverter.intToHexWithPrefix(value, hex.length()));
+		assertEquals(Constants.HEX_PREFIX + hex,
+				HexIntConverter.intToHexWithPrefix(value, hex.length()));
 	}
 
 	@Test
@@ -98,7 +99,8 @@ public class TestHexIntConverter {
 
 	private static void testMethodCoherence(int value, int nbNibbles) {
 		assertEquals(value, HexIntConverter.hexToInt(HexIntConverter.intToHex(value, nbNibbles)));
-		assertEquals(value, HexIntConverter.hexToInt(HexIntConverter.intToHexWithPrefix(value, nbNibbles)));
+		assertEquals(value,
+				HexIntConverter.hexToInt(HexIntConverter.intToHexWithPrefix(value, nbNibbles)));
 	}
 
 	private static String getNCopiesOf(String s, int copies) {

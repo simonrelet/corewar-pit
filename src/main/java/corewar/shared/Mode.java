@@ -20,7 +20,7 @@ public enum Mode {
 
 	private final int value;
 
-	private Mode(int value) {
+	Mode(int value) {
 		this.value = value;
 	}
 
@@ -42,7 +42,7 @@ public enum Mode {
 
 	public static int offsetWithIdx(int offset, int idx) {
 		int tmp = (offset + idx) % (2 * idx);
-		if(tmp < 0) {
+		if (tmp < 0) {
 			tmp = 2 * idx + tmp;
 		}
 		return tmp - idx;

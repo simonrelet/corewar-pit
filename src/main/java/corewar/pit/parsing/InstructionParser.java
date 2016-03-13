@@ -27,12 +27,13 @@ public final class InstructionParser {
 	private InstructionParser() {
 	}
 
-	public static PitResult<Void> parseLabel(Map<String, Integer> labels, int lineNumber, String line, int shipSize, String[] split, String instructionName) {
+	public static PitResult<Void> parseLabel(Map<String, Integer> labels, int lineNumber,
+			String line, int shipSize, String[] split, String instructionName) {
 		PitError error = null;
-		PitWarning warning = null;
 
 		if (split.length != 1) {
-			error = PitError.create(lineNumber, instructionName, line, "A label must be on his own line");
+			error = PitError
+					.create(lineNumber, instructionName, line, "A label must be on his own line");
 		} else {
 			String label = instructionName.substring(0, instructionName.length() - 1);
 			if (isValidLabel(label)) {
@@ -42,13 +43,15 @@ public final class InstructionParser {
 					labels.put(label, shipSize);
 				}
 			} else {
-				warning = PitWarning.create(lineNumber, label, line, "The label is invalid therefore ignored. A label should follow the regexp: " + LABEL_REGEX);
+				error = PitError.create(lineNumber, label, line,
+						"The label is invalid. A label should follow the regexp: " + LABEL_REGEX);
 			}
 		}
-		return PitResult.create(error, warning);
+		return PitResult.create(error, (PitWarning) null);
 	}
 
-	public static PitResult<Instruction> parseText(InstructionInfo instructionInfo, int lineNumber, String lLine, String[] rawParametersList) {
+	public static PitResult<Instruction> parseText(InstructionInfo instructionInfo, int lineNumber,
+			String lLine, String[] rawParametersList) {
 		PitError error = null;
 		PitWarning warning = null;
 		Instruction result = null;
@@ -61,8 +64,9 @@ public final class InstructionParser {
 			int maxCharacterCount = ((TextInstructionInfo) instructionInfo).getMaxCharacterCount();
 			if (text.length() > maxCharacterCount) {
 				warning = PitWarning.create(lineNumber, text, lLine,
-					"Text to long, truncated. The maximum length for text in the " + instructionInfo.getName()
-					+ " instruction is " + maxCharacterCount);
+						"Text to long, truncated. The maximum length for text in the " + instructionInfo
+								.getName()
+								+ " instruction is " + maxCharacterCount);
 				text = text.substring(0, maxCharacterCount);
 			}
 			result = new TextInstruction(instructionInfo.getName(), text);
@@ -70,7 +74,8 @@ public final class InstructionParser {
 		return PitResult.create(result, error, warning);
 	}
 
-	public static PitResult<Instruction> parseNopCrash(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList) {
+	public static PitResult<Instruction> parseNopCrash(InstructionInfo instructionInfo,
+			int lineNumber, String line, String[] rawParametersList) {
 		PitError error = null;
 		Instruction result = null;
 
@@ -82,27 +87,31 @@ public final class InstructionParser {
 				split = rawParametersList[0].split("\\s+");
 				for (String s : split) {
 					if (!s.toLowerCase().equals(instructionInfo.getName())) {
-						error = PitError.create(lineNumber, s, line, "Only '" + instructionInfo.getName() + "' were expected");
+						error = PitError.create(lineNumber, s, line,
+								"Only '" + instructionInfo.getName() + "' were expected");
 					}
 				}
 			}
 			if (error == null) {
 				result = new MultipleInstruction(((BinaryInstructionInfo) instructionInfo).getOpCode(),
-					instructionInfo.getName(), split == null ? 0 : split.length);
+						instructionInfo.getName(), split == null ? 0 : split.length);
 			}
 		}
 		return PitResult.create(result, error);
 	}
 
-	public static PitResult<Instruction> parseLdr(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList) {
+	public static PitResult<Instruction> parseLdr(InstructionInfo instructionInfo, int lineNumber,
+			String line, String[] rawParametersList) {
 		return parseLdrStr(instructionInfo, lineNumber, line, rawParametersList, false);
 	}
 
-	public static PitResult<Instruction> parseStr(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList) {
+	public static PitResult<Instruction> parseStr(InstructionInfo instructionInfo, int lineNumber,
+			String line, String[] rawParametersList) {
 		return parseLdrStr(instructionInfo, lineNumber, line, rawParametersList, true);
 	}
 
-	public static PitResult<Instruction> parseMode(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList) {
+	public static PitResult<Instruction> parseMode(InstructionInfo instructionInfo, int lineNumber,
+			String line, String[] rawParametersList) {
 		PitError error = null;
 		Instruction result = null;
 
@@ -129,36 +138,43 @@ public final class InstructionParser {
 		return PitResult.create(result, error);
 	}
 
-	public static PitResult<Instruction> parse0Parameters(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList) {
+	public static PitResult<Instruction> parse0Parameters(InstructionInfo instructionInfo,
+			int lineNumber, String line, String[] rawParametersList) {
 		PitError error = null;
 		Instruction result = null;
 
 		if (rawParametersList.length != 0) {
 			error = PitError.createParameterCount(lineNumber, line, 0);
 		} else {
-			result = new BinaryInstruction(((BinaryInstructionInfo) instructionInfo).getOpCode(), instructionInfo.getName(), instructionInfo.getName());
+			result = new BinaryInstruction(((BinaryInstructionInfo) instructionInfo).getOpCode(),
+					instructionInfo.getName(), instructionInfo.getName());
 		}
 
 		return PitResult.create(result, error);
 	}
 
-	public static PitResult<Instruction> parse1Parameters(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList) {
+	public static PitResult<Instruction> parse1Parameters(InstructionInfo instructionInfo,
+			int lineNumber, String line, String[] rawParametersList) {
 		return parseOnlyRegisters(instructionInfo, lineNumber, line, rawParametersList, 1);
 	}
 
-	public static PitResult<Instruction> parse2ParametersRegReg(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList) {
+	public static PitResult<Instruction> parse2ParametersRegReg(InstructionInfo instructionInfo,
+			int lineNumber, String line, String[] rawParametersList) {
 		return parseOnlyRegisters(instructionInfo, lineNumber, line, rawParametersList, 2);
 	}
 
-	public static PitResult<Instruction> parse2ParametersRegNum(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList) {
+	public static PitResult<Instruction> parse2ParametersRegNum(InstructionInfo instructionInfo,
+			int lineNumber, String line, String[] rawParametersList) {
 		return parseArithmetic(instructionInfo, lineNumber, line, rawParametersList, false, 1);
 	}
 
-	public static PitResult<Instruction> parse3Parameters(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList) {
+	public static PitResult<Instruction> parse3Parameters(InstructionInfo instructionInfo,
+			int lineNumber, String line, String[] rawParametersList) {
 		return parseArithmetic(instructionInfo, lineNumber, line, rawParametersList, true, 2);
 	}
 
-	private static PitResult<Instruction> parseLdrStr(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList, boolean firstRegIsAddress) {
+	private static PitResult<Instruction> parseLdrStr(InstructionInfo instructionInfo,
+			int lineNumber, String line, String[] rawParametersList, boolean firstRegIsAddress) {
 		PitError error = null;
 		Instruction result = null;
 		int[] registers = new int[2];
@@ -195,12 +211,14 @@ public final class InstructionParser {
 			}
 		}
 		if (error == null) {
-			result = new RegisterInstruction(((BinaryInstructionInfo) instructionInfo).getOpCode(), instructionInfo.getName(), registers, addresses);
+			result = new RegisterInstruction(((BinaryInstructionInfo) instructionInfo).getOpCode(),
+					instructionInfo.getName(), registers, addresses);
 		}
 		return PitResult.create(result, error);
 	}
 
-	private static PitResult<Instruction> parseOnlyRegisters(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList, int nbRegisters) {
+	private static PitResult<Instruction> parseOnlyRegisters(InstructionInfo instructionInfo,
+			int lineNumber, String line, String[] rawParametersList, int nbRegisters) {
 		PitError error = null;
 		Instruction result = null;
 
@@ -217,13 +235,16 @@ public final class InstructionParser {
 				registers[i] = registerValue;
 			}
 			if (error == null) {
-				result = new RegisterInstruction(((BinaryInstructionInfo) instructionInfo).getOpCode(), instructionInfo.getName(), registers);
+				result = new RegisterInstruction(((BinaryInstructionInfo) instructionInfo).getOpCode(),
+						instructionInfo.getName(), registers);
 			}
 		}
 		return PitResult.create(result, error);
 	}
 
-	private static PitResult<Instruction> parseArithmetic(InstructionInfo instructionInfo, int lineNumber, String line, String[] rawParametersList, boolean address, int nbArithmetic) {
+	private static PitResult<Instruction> parseArithmetic(InstructionInfo instructionInfo,
+			int lineNumber, String line, String[] rawParametersList, boolean address,
+			int nbArithmetic) {
 		PitError error = null;
 		Instruction result = null;
 
@@ -234,16 +255,19 @@ public final class InstructionParser {
 			int registerValue;
 			registerValue = address ? getAddressValue(registerStr) : getRegisterValue(registerStr);
 			if (registerValue == -1) {
-				error = PitError.createInvalid(lineNumber, registerStr, line, address ? STRING_ADDRESS : STRING_REGISTER);
+				error = PitError.createInvalid(lineNumber, registerStr, line,
+						address ? STRING_ADDRESS : STRING_REGISTER);
 			} else {
 				String[] arithmetic = new String[nbArithmetic];
 				for (int i = 0; i < nbArithmetic; i++) {
 					arithmetic[i] = rawParametersList[i + 1].trim();
 				}
-				int nbNibbles = ((ArithmeticInstructionInfo) InstructionInfo.getInstructionInfo(instructionInfo.getName())).getNbNibbles();
-				result = new ArithmeticInstruction(((BinaryInstructionInfo) instructionInfo).getOpCode(),
-					instructionInfo.getName(), lineNumber, line, registerValue, address, arithmetic,
-					nbNibbles);
+				int nbNibbles = ((ArithmeticInstructionInfo) InstructionInfo
+						.getInstructionInfo(instructionInfo.getName())).getNbNibbles();
+				result = new ArithmeticInstruction(
+						((BinaryInstructionInfo) instructionInfo).getOpCode(),
+						instructionInfo.getName(), lineNumber, line, registerValue, address, arithmetic,
+						nbNibbles);
 			}
 		}
 		return PitResult.create(result, error);

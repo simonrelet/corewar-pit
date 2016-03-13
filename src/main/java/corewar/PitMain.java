@@ -7,7 +7,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class PitMain {
+public final class PitMain {
+
+	private PitMain() {
+	}
 
 	public static void main(String[] args) {
 		if (args.length < 1) {

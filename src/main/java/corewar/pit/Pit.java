@@ -1,9 +1,10 @@
 package corewar.pit;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import corewar.pit.instruction.Instruction;
 import corewar.pit.instruction.ArithmeticInstruction;
 import corewar.pit.instruction.BinaryInstruction;
+import corewar.pit.instruction.Instruction;
 import corewar.pit.instruction.MultipleInstruction;
 import corewar.pit.instruction.TextInstruction;
 import corewar.pit.parsing.ArithmeticInstructionInfo;
@@ -11,16 +12,15 @@ import corewar.pit.parsing.InstructionInfo;
 import corewar.pit.parsing.InstructionParser;
 import corewar.shared.Constants;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public final class Pit {
 
-	private final List<Instruction> shipInstructions = new ArrayList<>();
+	private final Collection<Instruction> shipInstructions = new ArrayList<>();
 	private final StringBuilder shipBin = new StringBuilder();
 	private final Collection<PitError> pitErrors = new ArrayList<>();
 	private final Collection<PitWarning> pitWarnings = new ArrayList<>();
@@ -29,7 +29,7 @@ public final class Pit {
 	private String shipComment = "";
 	private int shipSize;
 	private int currentLineNumber;
-	private String currentLine;
+	private String currentLine = "";
 
 	private Pit() {
 	}
@@ -52,15 +52,16 @@ public final class Pit {
 
 			currentLine = currentLine.trim();
 			if (!currentLine.isEmpty()) {
-				Instruction instruction = getInstruction(currentLine);
-				if (instruction != null) {
-					shipInstructions.add(instruction);
+				Optional<Instruction> instruction = getInstruction(currentLine);
+				if (instruction.isPresent()) {
+					shipInstructions.add(instruction.get());
 				}
 			}
 		}
 
 		if (shipName.isEmpty()) {
-			pitErrors.add(PitError.create("A mame should be given with the following instruction: .name \"Awesomeness\""));
+			pitErrors.add(PitError.create(
+					"A mame should be given with the following instruction: .name \"Awesomeness\""));
 		}
 
 		if (pitErrors.isEmpty()) {
@@ -70,15 +71,14 @@ public final class Pit {
 				evalExpr();
 				if (pitErrors.isEmpty()) {
 					toBin();
-					pitShip = PitShip.create(shipName, shipComment, shipBin.toString(), shipInstructions, shipSize);
+					pitShip = PitShip.create(shipName, shipBin.toString()
+					);
 				}
 			}
 		}
 
 		return PitResult.create(pitShip, pitErrors, pitWarnings);
 	}
-
-	// -- Create binary --------------------------------------------------------------------------
 
 	private void toBin() {
 		shipBin.append(shipName);
@@ -98,8 +98,6 @@ public final class Pit {
 		return Strings.repeat(Constants.NON_TEXT_PADDING_CHAR, maxLength - textLength);
 	}
 
-	// -- Eval Expr ------------------------------------------------------------------------------
-
 	private void evalExpr() {
 		shipInstructions.forEach(instruction -> {
 			if (instruction instanceof ArithmeticInstruction) {
@@ -112,15 +110,17 @@ public final class Pit {
 		String[] arithmetic = instruction.getArithmetic();
 		int[] values = new int[arithmetic.length];
 		for (int i = 0; i < arithmetic.length; i++) {
-			PitResult<Integer> result = Eval.eval(labels, arithmetic[i], instruction.getLineNumber(), instruction.getLine());
+			PitResult<Integer> result = Eval.eval(labels, arithmetic[i], instruction.getLineNumber(),
+					instruction.getLine());
 			if (result.hasErrors()) {
 				pitErrors.addAll(result.getErrors());
 				break;
 			}
 
 			int value = result.getResult();
-			InstructionInfo instructionInfo = InstructionInfo.getInstructionInfo(instruction.getName());
-			assert instructionInfo != null;
+			InstructionInfo instructionInfo = InstructionInfo
+					.getInstructionInfo(instruction.getName());
+			Preconditions.checkNotNull(instructionInfo, "There should be an instruction");
 			int nbNibbles = ((ArithmeticInstructionInfo) instructionInfo).getNbNibbles();
 			int pow3 = (int) Math.pow(2, 3 * nbNibbles);
 			int maxValue = pow3 - 1;
@@ -128,33 +128,27 @@ public final class Pit {
 			int range = (int) Math.pow(2, 4 * nbNibbles);
 			if (value < minValue || value > maxValue) {
 				value = ((value - minValue) % range) + minValue;
-//                        pitWarnings.add(PitWarning.create(instruction.getLineNumber(),
-//                                arithmetic[i], instruction.getLine(),
-//                                "Value truncated to '" + value + "'",
-//                                "The value should be in the range [" + minValue + ", " + maxValue + "]"));
 			}
 			values[i] = value;
 		}
 		instruction.setValues(values);
 	}
 
-	// -- Instructions functions -----------------------------------------------------------------
-
-	@Nullable
-	private Instruction getInstruction(String line) {
+	private Optional<Instruction> getInstruction(String line) {
 		String[] split = line.split("\\s+", 2);
 		String instructionName = split[0];
 
 		if (instructionName.endsWith(":")) {
 			getLabelInstruction(split, instructionName);
-			return null;
+			return Optional.empty();
 		}
 
 		instructionName = instructionName.toLowerCase();
 		InstructionInfo instructionInfo = InstructionInfo.getInstructionInfo(instructionName);
 		if (instructionInfo == null) {
-			pitErrors.add(PitError.create(currentLineNumber, instructionName, currentLine, "Unknown instruction"));
-			return null;
+			pitErrors.add(PitError.create(currentLineNumber, instructionName, currentLine,
+					"Unknown instruction"));
+			return Optional.empty();
 		}
 
 		String rawParameters = "";
@@ -165,10 +159,11 @@ public final class Pit {
 		String[] rawParametersList;
 		rawParametersList = rawParameters.isEmpty() ? new String[0] : rawParameters.split(",");
 
-		PitResult<Instruction> result = instructionInfo.parse(currentLineNumber, currentLine, rawParametersList);
+		PitResult<Instruction> result = instructionInfo.parse(currentLineNumber, currentLine,
+				rawParametersList);
 		if (result.hasErrors()) {
 			pitErrors.addAll(result.getErrors());
-			return null;
+			return Optional.empty();
 		}
 
 		if (result.hasWarnings()) {
@@ -183,7 +178,7 @@ public final class Pit {
 			} else {
 				shipComment = textInstruction.getText();
 			}
-			return null;
+			return Optional.empty();
 		}
 
 		if (instruction instanceof MultipleInstruction) {
@@ -192,11 +187,12 @@ public final class Pit {
 		}
 
 		shipSize += instructionInfo.getLength();
-		return instruction;
+		return Optional.of(instruction);
 	}
 
 	private void getLabelInstruction(String[] split, String instructionName) {
-		PitResult<?> result = InstructionParser.parseLabel(labels, currentLineNumber, currentLine, shipSize, split, instructionName);
+		PitResult<?> result = InstructionParser.parseLabel(labels, currentLineNumber, currentLine,
+				shipSize, split, instructionName);
 		if (result.hasErrors()) {
 			pitErrors.addAll(result.getErrors());
 		}

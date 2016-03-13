@@ -19,6 +19,7 @@ public final class PitError extends PitNotification {
 	}
 
 	public static PitError createParameterCount(int line, String cause, int expectedCount) {
-		return create(line, cause, "", "Expected " + expectedCount + " parameter" + (expectedCount > 1 ? "s" : ""));
+		return create(line, cause, "",
+				"Expected " + expectedCount + " parameter" + (expectedCount > 1 ? "s" : ""));
 	}
 }

@@ -1,38 +1,6 @@
-# OS Files #
 .DS_Store
-
-*.class
-*.iml
-
-
-# Package Files #
-*.jar
-*.war
-*.ear
-*.db
-
-
-#  Java
-# ------
 *target*
-*.class
-
-
-#  Maven
-# -------
-*maven*
-*apache-maven-3.3.3*
 *m2*
 dependency-reduced-pom.xml
-
-#  Mac OS
-# --------
-.DS_Store
-._*
-.Spotlight-V100
-.Trashes
-
-#  Idea
-# --------
-.idea/
+.idea
 *.iml

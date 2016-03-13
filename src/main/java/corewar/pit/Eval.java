@@ -12,7 +12,8 @@ public final class Eval {
 	private Eval() {
 	}
 
-	public static PitResult<Integer> eval(Map<String, Integer> labels, String str, int currentLineNumber, String currentLine) {
+	public static PitResult<Integer> eval(Map<String, Integer> labels, String str,
+			int currentLineNumber, String currentLine) {
 		Parser parser = new Parser(labels, str, currentLineNumber, currentLine);
 		List<PitError> errors = null;
 		Integer d;
@@ -27,7 +28,10 @@ public final class Eval {
 	}
 
 	private static boolean isNumberOrLabel(int c) {
-		return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
+		return (c >= '0' && c <= '9')
+				|| (c >= 'a' && c <= 'z')
+				|| (c >= 'A' && c <= 'Z')
+				|| (c == '_');
 	}
 
 	private static boolean isLabel(String value) {
@@ -49,7 +53,8 @@ public final class Eval {
 		private int pos = -1;
 		private int c;
 
-		private Parser(Map<String, Integer> labels, String str, int currentLineNumber, String currentLine) {
+		private Parser(Map<String, Integer> labels, String str, int currentLineNumber,
+				String currentLine) {
 			this.labels = labels;
 			this.str = str;
 			this.currentLineNumber = currentLineNumber;
@@ -74,7 +79,8 @@ public final class Eval {
 			eatChar();
 			int v = parseExpression();
 			if (c != -1) {
-				errors.add(PitError.create(currentLineNumber, String.valueOf((char) c), currentLine, "Unexpected character"));
+				errors.add(PitError.create(currentLineNumber, String.valueOf((char) c), currentLine,
+						"Unexpected character"));
 				throw new RuntimeException();
 			}
 			return v;
@@ -142,7 +148,8 @@ public final class Eval {
 					eatChar();
 				}
 				if (sb.length() == 0) {
-					errors.add(PitError.create(currentLineNumber, String.valueOf((char) c), currentLine, "Unexpected character"));
+					errors.add(PitError.create(currentLineNumber, String.valueOf((char) c), currentLine,
+							"Unexpected character"));
 					throw new RuntimeException();
 				}
 				String value = sb.toString();
@@ -150,14 +157,16 @@ public final class Eval {
 					if (labels.containsKey(value)) {
 						v = labels.get(value);
 					} else {
-						errors.add(PitError.create(currentLineNumber, value, currentLine, "Label not found"));
+						errors.add(PitError.create(currentLineNumber, value, currentLine,
+								"Label not found"));
 						throw new RuntimeException();
 					}
 				} else {
 					try {
 						v = isHexadecimal(value) ? hexStringToInt(value) : intStringToInt(value);
 					} catch (Exception e) {
-						errors.add(PitError.createInvalid(currentLineNumber, value, currentLine, "number format"));
+						errors.add(PitError.createInvalid(currentLineNumber, value, currentLine,
+								"number format"));
 						throw new RuntimeException();
 					}
 				}
