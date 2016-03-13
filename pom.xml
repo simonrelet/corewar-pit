@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>simonrelet</groupId>
     <artifactId>corewar-pit</artifactId>
-    <version>0.0.2</version>
+    <version>0.1.0</version>
     <name>Corewar Pit</name>
     <packaging>jar</packaging>
     <build>
