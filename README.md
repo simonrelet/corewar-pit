@@ -42,8 +42,10 @@ mov r4, , r15  # Syntax error
 #### The Nibble: Smalest Memory Unit
 
 Through the Corewar Championship the smalest memory unit used is the nibble
-(also know as a quartet). It has a length of 4 bits (half-byte) and can be
+('q', also know as a quartet). It has a length of 4 bits (half-byte) and can be
 represented by a single hexadecimal character.
+
+So `0xf` is a nibble, and '4q' means '4 nibbles'.
 
 #### The PC and W'O"
 
@@ -55,14 +57,14 @@ the distance traveled since the start of the race.
 
 #### The Registers
 
-Any ship has access to 16 registers of 4 nibbles. The first register is `r0`
-and the last `r15`.
+Any ship has access to 16 registers of 4q. The first register is `r0` and the
+last `r15`.
 
 By default they are all set to zero.
 
 #### The Buffer
 
-A buffer is availble to any ship to store up to 64 nibbles. There are only 2
+A buffer is availble to any ship to store up to 64q. There are only 2
 instructions to access it: `ldb` and `stb`. The buffer is circular, so writing
 or reading past the end, will loop back to the start of the buffer. 
 
@@ -107,9 +109,9 @@ offset of 10 (to address 40) it will end up at address 20.
 
 #### The Constants
 
-Some instructions take constants as arguments, it's size (the number of nibble)
-and whether it is signed or unsigned (positive, negative) is defined by the
-instruction.
+Some instructions take constants as arguments, it's size (the number of
+nibbles) and whether it is signed or unsigned (positive, negative) is defined
+by the instruction.
 
 A constant can be in decimal or in hexadecimal but then must be preceed by
 `0x`.
@@ -145,7 +147,7 @@ Value examples:
 foo:            # 'foo' equals to 0x0
     mov r0, r1
 bar:            # 'bar' equals to 0x3,
-                # because 'mov' has a size of 3 (nibbles).
+                # because 'mov' has a size of 3q.
     nop
     nop
     nop
@@ -279,8 +281,8 @@ Syntax: `rol rx, n`. Flags update: `Z`, `S`. Encoding: `6xn`
 Does a left rotation of `n` bits on the `rx` register. Bits that exit on the
 left enter on the right.
 
-`n` is unsigned and encoded on 1 nibble, which means that 0x1234 will be
-truncated to 0x4.
+`n` is unsigned and encoded on 1q, which means that 0x1234 will be truncated to
+0x4.
 
 Examples:
 ```
@@ -297,8 +299,8 @@ Syntax: `asr rx, n`. Flags Update: `Z`, `S`. Encoding: `7xn`
 Does an arithmetic shift of `n` bits to the right on the `rx` register:
 entering bits are equal to the sign bit.
 
-`n` is unsigned and encoded on 1 nibble, which means that 0x1234 will be
-truncated to 0x4.
+`n` is unsigned and encoded on 1q, which means that 0x1234 will be truncated to
+0x4.
 
 Examples:
 ```
@@ -352,7 +354,7 @@ Syntax: `addi rx, n`. Flags Update: `Z`, `S`. Encoding: `f5xn`
 Adds the signed constant `n` to the `rx` register, and stores the result in
 `rx`.
 
-`n` is encoded on 1 nibble, which means that 0x1234 will be truncated to 0x4.
+`n` is encoded on 1q, which means that 0x1234 will be truncated to 0x4.
 
 Examples:
 ```
@@ -367,7 +369,7 @@ Syntax: `cmpi rx, n`. Flags Update: `Z`, `S`. Encoding: `f6xn`
 
 Subtracts the signed constant `n` from `rx`, but doesn't store the result.
 
-`n` is encoded on 1 nibble, which means that 0x1234 will be truncated to 0x4.
+`n` is encoded on 1q, which means that 0x1234 will be truncated to 0x4.
 
 Example:
 ```
@@ -416,7 +418,7 @@ Syntax: `lc rx, n`. Flags Update: None. Encoding: `f2xnn`
 Loads `n` in `rx`'s two least significant nibbles and propagates the sign bit
 to `rx`'s two most significant nibbles.
 
-`n` is encoded on 2 nibbles, which means that 0x1234 will be truncated to 0x34.
+`n` is encoded on 2q, which means that 0x1234 will be truncated to 0x34.
 
 Examples:
 ```
@@ -428,7 +430,7 @@ lc r3, 0x00f6  # r3: -10 (0xfff6)
 ##### LL (Load Long Constant)
 Syntax: `ll rx, n`. Flags Update: None. Encoding: `f3xnnnn`
 
-Loads `n` in the `rx` register. `n` is encoded on 4 nibbles.
+Loads `n` in the `rx` register. `n` is encoded on 4q.
 
 Examples:
 ```
@@ -446,7 +448,7 @@ usual arithmetic modulo.
 ##### LDR (LoaD Register)
 Syntax: `ldr rx, [ry]`. Flags Update: None. Encoding: `dxy`
 
-Loads the 4 nibbles stored at the address `PC + (ry % IDX)` in `rx`.
+Loads the 4q stored at the address `PC + (ry % IDX)` in `rx`.
 
 `ry`'s value is signed.
 
@@ -459,7 +461,7 @@ ldr r1, [r0]  # Reads r1's content from PC + (20 % IDX)
 ##### STR (STore Register)
 Syntax: `str [rx], ry`. Flags Update: None. Encoding: `exy`
 
-Stores the 4 nibbles of `ry` at the address `PC + (rx % IDX)`.
+Stores the 4q of `ry` at the address `PC + (rx % IDX)`.
 
 `rx`'s value is signed.
 
@@ -500,7 +502,7 @@ nibbles will be read from the beginning of the buffer.
 Example:
 ```
 ll  r0, 42
-stb [r0], 0, 32  # Writes the 32 first nibbles of the buffer at
+stb [r0], 0, 32  # Writes the first 32q of the buffer at
                  # PC + (42 % IDX)
 ```
 
@@ -604,10 +606,10 @@ Loads the Stadium's statistics in `rx`.
 | `stat rx, 3`  | loads `W'O"` |
 | `stat rx, 4`  | loads the number of validated checkpoints since the beginning of the race |
 | `stat rx, 5`  | loads the start address of the ship |
-| `stat rx, 6`  | loads the track size (in nibbles) |
+| `stat rx, 6`  | loads the track size (in q) |
 | `stat rx, 7`  | loads the number of laps to complete |
 | `stat rx, 8`  | loads the number of checkpoints per lap |
-| `stat rx, 9`  | loads the size of a checkzone (in nibbles) |
+| `stat rx, 9`  | loads the size of a checkzone (in q) |
 | `stat rx, 10` | loads the maximum number of cycles to validate a checkpoint |
 | `stat rx, 11` | loads the remaining number of cycles to validate a checkpoint before the ship is destroyed |
 | `stat rx, 12` | loads the ship's position in the race (1 if it's first, 2 if it's second etc.) |
@@ -646,3 +648,39 @@ Syntax: `fork`. Flags Update: `Z`. Encoding: `fe`
 
 Duplicates the ship. The only differences between the 2 ships is the `Z` flag:
 The new ship's `Z` flag is set and the original ship's `Z` flag is not set.
+
+## Encoding
+
+| Instruction      | q0 | q1 | q2 | q3 | q4 | q5 | q6 |
+|------------------|----|----|----|----|----|----|----|
+| `crash`          |  0 |    |    |    |    |    |    |
+| `nop`            |  1 |    |    |    |    |    |    |
+| `and rx, ry`     |  2 | rx | ry |    |    |    |    |
+| `or rx, ry`      |  3 | rx | ry |    |    |    |    |
+| `xor rx, ry`     |  4 | rx | ry |    |    |    |    |
+| `not rx, ry`     |  5 | rx | ry |    |    |    |    |
+| `rol rx, n`      |  6 | rx |  n |    |    |    |    |
+| `asr rx, n`      |  7 | rx |  n |    |    |    |    |
+| `add rx, ry`     |  8 | rx | ry |    |    |    |    |
+| `sub rx, ry`     |  9 | rx | ry |    |    |    |    |
+| `cmp rx, ry`     |  a | rx | ry |    |    |    |    |
+| `neg rx, ry`     |  b | rx | ry |    |    |    |    |
+| `mov rx, ry`     |  c | rx | ry |    |    |    |    |
+| `ldr rx, [ry]`   |  d | rx | ry |    |    |    |    |
+| `str [rx], ry`   |  e | rx | ry |    |    |    |    |
+| `ldb [rx], n, m` |  f |  0 | rx | n0 | n1 | m0 | m1 |
+| `stb [rx], n, m` |  f |  1 | rx | n0 | n1 | m0 | m1 |
+| `lc rx, n`       |  f |  2 | rx | n0 | n1 |    |    |
+| `ll rx, n`       |  f |  3 | rx | n0 | n1 | n2 | n3 |
+| `swp rx, ry`     |  f |  4 | rx | ry |    |    |    |
+| `addi rx, n`     |  f |  5 | rx |  n |    |    |    |
+| `cmpi rx, n`     |  f |  6 | rx |  n |    |    |    |
+| `b rx`           |  f |  7 | rx |    |    |    |    |
+| `bz rx`          |  f |  8 | rx |    |    |    |    |
+| `bnz rx`         |  f |  9 | rx |    |    |    |    |
+| `bs rx`          |  f |  a | rx |    |    |    |    |
+| `stat rx, n`     |  f |  b | rx |  n |    |    |    |
+| `check`          |  f |  c |    |    |    |    |    |
+| `mode m`         |  f |  d |  m |    |    |    |    |
+| `fork`           |  f |  e |    |    |    |    |    |
+| `write rx`       |  f |  f | rx |    |    |    |    |
