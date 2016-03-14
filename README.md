@@ -43,7 +43,8 @@ mov r4, , r15  # Syntax error
 
 Through the Corewar Championship the smalest memory unit used is the nibble
 ('q', also know as a quartet). It has a length of 4 bits (half-byte) and can be
-represented by a single hexadecimal character.
+represented by a single hexadecimal character. Each address corresponds to a
+single nibble.
 
 So `0xf` is a nibble, and '4q' means '4 nibbles'.
 
