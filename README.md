@@ -568,11 +568,22 @@ bs   r0      # Jumps to PC + (40 % IDX)
 Syntax: `crash`. Flags Update: None. Encoding: `0`
 
 If a processor executes this instruction, it is instantly destroyed (but we
-don't really care, do we?).
+don't really care, do we?). Consecutive `crash`s can be written on the same line.
+
+Examples:
+```
+crash              # Bang! You're dead.
+crash crash crash  # Still dead.
+```
+
+##### NOP
+Syntax: `nop`. Flags Update: None. Encoding: `1`
+
+No effect, very useful. Consecutive `nop`s can be written on the same line.
 
 Example:
 ```
-crash  # Bim! You're dead.
+nop nop nop nop nop  # Well, you got the idea.
 ```
 
 ##### WRITE
@@ -635,8 +646,3 @@ Syntax: `fork`. Flags Update: `Z`. Encoding: `fe`
 
 Duplicates the ship. The only differences between the 2 ships is the `Z` flag:
 The new ship's `Z` flag is set and the original ship's `Z` flag is not set.
-
-##### NOP
-Syntax: `nop`. Flags Update: None. Encoding: `1`
-
-No effect, very useful.
