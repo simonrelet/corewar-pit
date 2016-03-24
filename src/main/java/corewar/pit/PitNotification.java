@@ -18,7 +18,7 @@ public abstract class PitNotification {
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder("{\"line\":")
 				.append(line == -1 ? 0 : line)
-				.append(",\"msg\":\"")
+				.append(",\"message\":\"")
 				.append(secureString(message));
 
 		if (!cause.isEmpty()) {
