@@ -69,7 +69,7 @@ public final class InstructionParser {
 								+ " instruction is " + maxCharacterCount);
 				text = text.substring(0, maxCharacterCount);
 			}
-			result = new TextInstruction(instructionInfo.getName(), text);
+			result = new TextInstruction(instructionInfo.getName(), text.trim());
 		}
 		return PitResult.create(result, error, warning);
 	}
