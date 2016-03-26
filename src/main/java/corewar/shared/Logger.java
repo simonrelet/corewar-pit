@@ -119,7 +119,7 @@ public final class Logger {
 		@Override
 		protected void handleShip(StringBuilder stringBuilder, PitShip result) {
 			stringBuilder.append(result.getName())
-					.append(" is ready to kick asses!\n")
+					.append(" is ready to kick ass!\n")
 					.append("-- Begin Bin --\n")
 					.append(getParts(result.getBin(), 80).stream()
 							.reduce((s, s2) -> s + "\n" + s2).get())
@@ -144,7 +144,7 @@ public final class Logger {
 
 		@Override
 		protected StringBuilder suffix(StringBuilder stringBuilder) {
-			return stringBuilder.append("\n");
+			return stringBuilder;
 		}
 
 		@Override
