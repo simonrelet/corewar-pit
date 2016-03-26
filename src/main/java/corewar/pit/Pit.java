@@ -11,6 +11,8 @@ import corewar.pit.parsing.ArithmeticInstructionInfo;
 import corewar.pit.parsing.InstructionInfo;
 import corewar.pit.parsing.InstructionParser;
 import corewar.shared.Constants;
+import corewar.shared.Logger;
+import corewar.shared.OptionParser.Options;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,11 +36,11 @@ public final class Pit {
 	private Pit() {
 	}
 
-	public static PitResult<PitShip> build(String inputShipText) {
-		return new Pit().buildInternal(inputShipText);
+	public static void build(String inputShipText, Options opt) {
+		new Pit().buildInternal(inputShipText, opt);
 	}
 
-	private PitResult<PitShip> buildInternal(String inputShipText) {
+	private void buildInternal(String inputShipText, Options opt) {
 		PitShip pitShip = null;
 		String[] lines = inputShipText.split(Constants.REGEX_END_OF_LINE);
 		for (String line : lines) {
@@ -58,26 +60,26 @@ public final class Pit {
 				}
 			}
 		}
+		currentLineNumber++;
 
 		if (shipName.isEmpty()) {
-			pitErrors.add(PitError.create(
+			pitErrors.add(PitError.create(currentLineNumber,
 					"A mame should be given with the following instruction: .name \"Awesomeness\""));
 		}
 
 		if (pitErrors.isEmpty()) {
 			if (shipInstructions.isEmpty()) {
-				pitErrors.add(PitError.create("A ship cannot be empty!"));
+				pitErrors.add(PitError.create(currentLineNumber, "A ship cannot be empty!"));
 			} else {
 				evalExpr();
 				if (pitErrors.isEmpty()) {
 					toBin();
-					pitShip = PitShip.create(shipName, shipBin.toString()
-					);
+					pitShip = PitShip.create(shipName, shipBin.toString());
 				}
 			}
 		}
 
-		return PitResult.create(pitShip, pitErrors, pitWarnings);
+		Logger.logResult(PitResult.create(pitShip, pitErrors, pitWarnings), opt);
 	}
 
 	private void toBin() {
